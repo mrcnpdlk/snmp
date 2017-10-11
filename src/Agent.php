@@ -1,8 +1,30 @@
 <?php
+/**
+ * SNMP
+ *
+ * Copyright (c) 2017 pudelek.org.pl
+ *
+ * @license MIT License (MIT)
+ *
+ * For the full copyright and license information, please view source file
+ * that is bundled with this package in the file LICENSE
+ *
+ * @author  Marcin Pudełek <marcin@pudelek.org.pl>
+ */
 
 namespace mrcnpdlk\Snmp;
 
-
+/**
+ * Class Agent
+ *
+ * @package mrcnpdlk\Snmp
+ *
+ * This class is based on opensolutions/OSS_SNMP project main class.
+ * @link    https://github.com/opensolutions/OSS_SNMP[opensolutions/OSS_SNMP]
+ *
+ * Contact: Barry O'Donovan - barry (at) opensolutions (dot) ie
+ * @link    http://www.opensolutions.ie/
+ */
 class Agent
 {
     /**
@@ -17,54 +39,20 @@ class Agent
      * @var int SNMP output constants to mirror those of PHP
      */
     const OID_OUTPUT_NUMERIC = SNMP_OID_OUTPUT_NUMERIC;
-    /**
-     * Definition of an SNMP return type 'TruthValue'
-     *
-     * @var int Definition of an SNMP return type 'TruthValue'
-     */
-    const SNMP_TRUTHVALUE_TRUE = 1;
-    /**
-     * Definition of an SNMP return type 'TruthValue'
-     *
-     * @var int Definition of an SNMP return type 'TruthValue'
-     */
-    const SNMP_TRUTHVALUE_FALSE = 2;
-    /**
-     * PHP equivalents of SNMP return type TruthValue
-     *
-     * @var array PHP equivalents of SNMP return type TruthValue
-     */
-    public static $SNMP_TRUTHVALUES
-        = [
-            self::SNMP_TRUTHVALUE_TRUE  => true,
-            self::SNMP_TRUTHVALUE_FALSE => false,
-        ];
-    /**
-     * An array of arrays where each array element
-     * represents true / false values for a given
-     * hex digit.
-     *
-     * @see ppHexStringFlags()
-     */
-    public static $HEX_STRING_WORDS_AS_ARRAY
-        = [
-            '0' => [false, false, false, false],
-            '1' => [false, false, false, true],
-            '2' => [false, false, true, false],
-            '3' => [false, false, true, true],
-            '4' => [false, true, false, false],
-            '5' => [false, true, false, true],
-            '6' => [false, true, true, false],
-            '7' => [false, true, true, true],
-            '8' => [true, false, false, false],
-            '9' => [true, false, false, true],
-            'a' => [true, false, true, false],
-            'b' => [true, false, true, true],
-            'c' => [true, true, false, false],
-            'd' => [true, true, false, true],
-            'e' => [true, true, true, false],
-            'f' => [true, true, true, true],
-        ];
+
+    const SEC_LEVEL_NO_AUTH_NO_PRIV = 'noAuthNoPriv';
+    const SEC_LEVEL_AUTH_NO_PRIV    = 'authNoPriv';
+    const SEC_LEVEL_AUTH_PRIV       = 'authPriv';
+
+    const SEC_LEVEL_MD5 = 'MD5';
+    const SEC_LEVEL_SHA = 'SHA';
+
+    const PRIV_PROTOCOL_DES = 'DES';
+    const PRIV_PROTOCOL_AES = 'AES';
+
+    const SNMP_VER_1  = '1';
+    const SNMP_VER_2C = '2c';
+    const SNMP_VER_3  = '3';
     /**
      * The SNMP community to use when polling SNMP services. Defaults to 'public' by the constructor.
      *
@@ -85,31 +73,43 @@ class Agent
     protected $_version;
     /**
      * Essentially the same thing as the community for v1 and v2
+     *
+     * @var string
      */
     protected $_secName;
     /**
      * The security level on the device. Defaults to noAuthNoPriv by the constructor.
      * valid strings: (noAuthNoPriv|authNoPriv|authPriv)
+     *
+     * @var string
      */
     protected $_secLevel;
     /**
      * The authentication encryption picked on the device.
      * Defaults to MD5 by the constructor.
      * valid strings: (MD5|SHA)
+     *
+     * @var string
      */
     protected $_authProtocol;
     /**
      * The password for the secName. Defaults to None by the constructor.
+     *
+     * @var string
      */
     protected $_authPassphrase;
     /**
      * The communication encryption picked on the device.
      * Defaults to DES by the constructor.
      * valid strings: (DES|AES)
+     *
+     * @var string
      */
     protected $_privProtocol;
     /**
      * The password for the secName. Defaults to None by the constructor.
+     *
+     * @var string
      */
     protected $_privPassphrase;
     /**
@@ -130,53 +130,29 @@ class Agent
      * @var mixed The last unaltered result of an SNMP query
      */
     protected $_lastResult = null;
-    /**
-     * A variable to hold the platform object
-     *
-     * @var mixed The platform object
-     */
-    protected $_platform = null;
-    /**
-     * The cache object to use as the cache
-     *
-     * @var \OSS_SNMP\Cache The cache object to use
-     */
-    protected $_cache = null;
-    /**
-     * Set to true to disable local cache lookup and force SNMP queries
-     *
-     * Results are still stored. If you need to force a SNMP query, you can:
-     *
-     * $snmp = new OSS_SNMP( ... )'
-     * ...
-     * $snmp->disableCache();
-     * $snmp->get( ... );
-     * $snmp->enableCache();
-     */
-    protected $_disableCache = false;
 
     /**
      * The constructor.
      *
      * @param string $host      The target host for SNMP queries.
      * @param string $community The community to use for SNMP queries.
-     *
-     * @return $this An instance of $this (for fluent interfaces)
+     * @param string $version
+     * @param string $seclevel
+     * @param string $authprotocol
+     * @param string $authpassphrase
+     * @param string $privprotocol
+     * @param string $privpassphrase
      */
     public function __construct(
-        $host = '127.0.0.1',
-        $community = 'public',
-        $version = '2c',
-        $seclevel = 'noAuthNoPriv',
-        $authprotocol = 'MD5',
-        $authpassphrase = 'None',
-        $privprotocol = 'DES',
-        $privpassphrase = 'None'
+        string $host = '127.0.0.1',
+        string $community = 'public',
+        string $version = Agent::SNMP_VER_2C,
+        string $seclevel = Agent::SEC_LEVEL_NO_AUTH_NO_PRIV,
+        string $authprotocol = Agent::SEC_LEVEL_MD5,
+        string $authpassphrase = 'None',
+        string $privprotocol = Agent::PRIV_PROTOCOL_DES,
+        string $privpassphrase = 'None'
     ) {
-        // make sure SNMP is installed!
-        if (!function_exists('snmp2_get')) {
-            die("It looks like the PHP SNMP package is not installed. This is required!\n");
-        }
 
         return $this->setHost($host)
                     ->setCommunity($community)
@@ -196,7 +172,7 @@ class Agent
      *
      * Should be one of the class OID_OUTPUT_* constants
      *
-     * @param int $f The fomat to use
+     * @param int $f The format to use
      *
      * @return $this An instance of $this (for fluent interfaces)
      */
@@ -208,92 +184,28 @@ class Agent
     }
 
     /**
-     * Utility function to convert TruthValue SNMP responses to true / false
+     * Importing external MIB file
      *
-     * @param integer $value The TruthValue ( 1 => true, 2 => false) to convert
+     * @param string $path
      *
-     * @return boolean
+     * @return $this
+     * @throws Exception
      */
-    public static function ppTruthValue($value)
+    public function importMibFile(string $path)
     {
-        if (is_array($value)) {
-            foreach ($value as $k => $v) {
-                $value[$k] = isset(self::$SNMP_TRUTHVALUES[$v]) ? self::$SNMP_TRUTHVALUES[$v] : false;
-            }
+        if (file_exists($path) && is_file($path) && is_readable($path)) {
+            snmp_read_mib($path);
         } else {
-            $value = isset(self::$SNMP_TRUTHVALUES[$value]) ? self::$SNMP_TRUTHVALUES[$value] : false;
+            throw new Exception(sprintf('MIB file [%s] malformed', realpath($path)));
         }
 
-        return $value;
-    }
-
-    /**
-     * Takes a HEX-String of true / false - on / off - set / unset flags
-     * and converts it to an indexed (from 1) array of true / false values.
-     *
-     * For example, passing it ``500040`` will result in an array:
-     *
-     *     [
-     *         [1]  => false, [2]  => true,  [3] => false, [4]  => true,
-     *         [5]  => false, [6]  => false, [7] => false, [8]  => false,
-     *         ...
-     *         [17] => false, [18] => true, [19] => false, [20] => false,
-     *         [21] => false, [22] => true, [23] => false, [24] => false
-     *     ]
-     *
-     * @param string $str The hex string to parse
-     *
-     * @return array The array of true / false flags indexed from 1
-     */
-    public static function ppHexStringFlags($str)
-    {
-        $str    = strtolower($str);  // ensure all hex digits are lower case
-        $values = [0 => 'dummy'];
-        for ($i = 0; $i < strlen($str); $i++) {
-            $values = array_merge($values, self::$HEX_STRING_WORDS_AS_ARRAY[$str[$i]]);
-        }
-        unset($values[0]);
-
-        return $values;
-    }
-
-    /**
-     * Utility function to translate one value(s) to another via an associated array
-     *
-     * I.e. all elements '$value' will be replaced with $translator( $value ) where
-     * $translator is an associated array.
-     *
-     * Huh? Just read the code below!
-     *
-     * @param mixed $values     A scalar or array or values to translate
-     * @param array $translator An associated array to use to translate the values
-     *
-     * @return mixed The translated scalar or array
-     */
-    public static function translate($values, $translator)
-    {
-        if (!is_array($values)) {
-            if (isset($translator[$values])) {
-                return $translator[$values];
-            } else {
-                return "*** UNKNOWN ***";
-            }
-        }
-        foreach ($values as $k => $v) {
-            if (isset($translator[$v])) {
-                $values[$k] = $translator[$v];
-            } else {
-                $values[$k] = "*** UNKNOWN ***";
-            }
-        }
-
-        return $values;
+        return $this;
     }
 
     /**
      * Get a single SNMP value
      *
-     * @throws \OSS_SNMP\Exception On *any* SNMP error, warnings are supressed and a generic exception is thrown
+     * @throws Exception On *any* SNMP error, warnings are supressed and a generic exception is thrown
      *
      * @param string $oid The OID to get
      *
@@ -301,17 +213,14 @@ class Agent
      */
     public function get($oid)
     {
-        if ($this->cache() && ($rtn = $this->getCache()->load($oid)) !== null) {
-            return $rtn;
-        }
         switch ($this->getVersion()) {
-            case 1:
+            case Agent::SNMP_VER_1:
                 $this->_lastResult = @snmpget($this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry());
                 break;
-            case '2c':
+            case  Agent::SNMP_VER_2C:
                 $this->_lastResult = @snmp2_get($this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry());
                 break;
-            case '3':
+            case  Agent::SNMP_VER_3:
                 $this->_lastResult = @snmp3_get($this->getHost(), $this->getSecName(), $this->getSecLevel(),
                     $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase(),
                     $oid, $this->getTimeout(), $this->getRetry()
@@ -324,50 +233,7 @@ class Agent
             throw new Exception('Could not perform walk for OID ' . $oid);
         }
 
-        return $this->getCache()->save($oid, $this->parseSnmpValue($this->_lastResult));
-    }
-
-    /**
-     * Query whether we are using the cache or not
-     *
-     * @return boolean True of the local lookup cache is enabled. Otherwise false.
-     */
-    public function cache()
-    {
-        return !$this->_disableCache;
-    }
-
-    /**
-     * Get the cache in use (or create a Cache\Basic instance
-     *
-     * We kind of mandate the use of a cache as the code is written with a cache in mind.
-     * You are free to disable it via disableCache() but your machines may be hammered!
-     *
-     * We would suggest disableCache() / enableCache() used in pairs only when really needed.
-     *
-     * @return \OSS_SNMP\Cache The cache object
-     */
-    public function getCache()
-    {
-        if ($this->_cache === null) {
-            $this->_cache = new \OSS_SNMP\Cache\Basic();
-        }
-
-        return $this->_cache;
-    }
-
-    /**
-     * Set the cache to use
-     *
-     * @param \OSS_SNMP\Cache $c The cache to use
-     *
-     * @return \$this For fluent interfaces
-     */
-    public function setCache($c)
-    {
-        $this->_cache = $c;
-
-        return $this;
+        return $this->parseSnmpValue($this->_lastResult);
     }
 
     /**
@@ -416,8 +282,6 @@ class Agent
         $this->_host = $h;
         // clear the temporary result cache and last result
         $this->_lastResult = null;
-        unset($this->_resultCache);
-        $this->_resultCache = [];
 
         return $this;
     }
@@ -494,54 +358,89 @@ class Agent
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     public function getSecName()
     {
         return $this->_secName;
     }
 
-    public function setSecName($n)
+    /**
+     * @param string $n
+     *
+     * @return $this
+     */
+    public function setSecName(string $n)
     {
         $this->_secName = $n;
 
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getSecLevel()
     {
         return $this->_secLevel;
     }
 
-    public function setSecLevel($l)
+    /**
+     * @param string $l
+     *
+     * @return $this
+     */
+    public function setSecLevel(string $l)
     {
         $this->_secLevel = $l;
 
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getAuthProtocol()
     {
         return $this->_authProtocol;
     }
 
-    public function setAuthProtocol($p)
+    /**
+     * @param string $p
+     *
+     * @return $this
+     */
+    public function setAuthProtocol(string $p)
     {
         $this->_authProtocol = $p;
 
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getAuthPassphrase()
     {
         return $this->_authPassphrase;
     }
 
-    public function setAuthPassphrase($p)
+    /**
+     * @param string $p
+     *
+     * @return $this
+     */
+    public function setAuthPassphrase(string $p)
     {
         $this->_authPassphrase = $p;
 
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getPrivProtocol()
     {
         return $this->_privProtocol;
@@ -554,12 +453,20 @@ class Agent
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getPrivPassphrase()
     {
         return $this->_privPassphrase;
     }
 
-    public function setPrivPassphrase($p)
+    /**
+     * @param string $p
+     *
+     * @return $this
+     */
+    public function setPrivPassphrase(string $p)
     {
         $this->_privPassphrase = $p;
 
@@ -659,9 +566,7 @@ class Agent
      */
     public function walk1d($oid)
     {
-        if ($this->cache() && ($rtn = $this->getCache()->load($oid)) !== null) {
-            return $rtn;
-        }
+
         $this->_lastResult = $this->realWalk($oid);
         if ($this->_lastResult === false) {
             throw new Exception('Could not perform walk for OID ' . $oid);
@@ -677,7 +582,7 @@ class Agent
             $result[substr($_oid, strrpos($_oid, '.') + 1)] = $this->parseSnmpValue($value);
         }
 
-        return $this->getCache()->save($oid, $result);
+        return $result;
     }
 
     /**
@@ -691,13 +596,13 @@ class Agent
     public function realWalk($oid)
     {
         switch ($this->getVersion()) {
-            case 1:
+            case Agent::SNMP_VER_1:
                 return $this->_lastResult = @snmprealwalk($this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry());
                 break;
-            case '2c':
+            case Agent::SNMP_VER_2C:
                 return $this->_lastResult = @snmp2_real_walk($this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry());
                 break;
-            case '3':
+            case Agent::SNMP_VER_3:
                 return $this->_lastResult = @snmp3_real_walk($this->getHost(), $this->getSecName(), $this->getSecLevel(),
                     $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase(),
                     $oid, $this->getTimeout(), $this->getRetry()
@@ -751,9 +656,6 @@ class Agent
      */
     public function subOidWalk($oid, $position, $elements = 1)
     {
-        if ($this->cache() && ($rtn = $this->getCache()->load($oid)) !== null) {
-            return $rtn;
-        }
         $this->_lastResult = $this->realWalk($oid);
         if ($this->_lastResult === false) {
             throw new Exception('Could not perform walk for OID ' . $oid);
@@ -768,7 +670,7 @@ class Agent
             $result[$index] = $this->parseSnmpValue($value);
         }
 
-        return $this->getCache()->save($oid, $result);
+        return $result;
     }
 
     /**
@@ -796,9 +698,7 @@ class Agent
      */
     public function walkIPv4($oid)
     {
-        if ($this->cache() && ($rtn = $this->getCache()->load($oid)) !== null) {
-            return $rtn;
-        }
+
         $this->_lastResult = $this->realWalk($oid);
         if ($this->_lastResult === false) {
             throw new Exception('Could not perform walk for OID ' . $oid);
@@ -810,7 +710,7 @@ class Agent
             $result[$oids[$len - 4] . '.' . $oids[$len - 3] . '.' . $oids[$len - 2] . '.' . $oids[$len - 1]] = $this->parseSnmpValue($value);
         }
 
-        return $this->getCache()->save($oid, $result);
+        return $result;
     }
 
     /**
@@ -821,49 +721,6 @@ class Agent
     public function getLastResult()
     {
         return $this->_lastResult;
-    }
-
-    /**
-     * Returns the internal result cache
-     *
-     * @return array The internal result cache
-     */
-    public function getResultCache()
-    {
-        return $this->_resultCache;
-    }
-
-    /**
-     * Disable lookups of the local cache
-     *
-     * @return $this An instance of this for fluent interfaces
-     */
-    public function disableCache()
-    {
-        $this->_disableCache = true;
-
-        return $this;
-    }
-
-    /**
-     * Enable lookups of the local cache
-     *
-     * @return $this An instance of this for fluent interfaces
-     */
-    public function enableCache()
-    {
-        $this->_disableCache = false;
-
-        return $this;
-    }
-
-    public function getPlatform()
-    {
-        if ($this->_platform === null) {
-            $this->_platform = new Platform($this);
-        }
-
-        return $this->_platform;
     }
 
     /**
@@ -880,9 +737,6 @@ class Agent
      */
     public function subOidWalkLong($oid, $positionS, $positionE)
     {
-        if ($this->cache() && ($rtn = $this->getCache()->load($oid)) !== null) {
-            return $rtn;
-        }
         $this->_lastResult = $this->realWalk($oid);
         if ($this->_lastResult === false) {
             throw new Exception('Could not perform walk for OID ' . $oid);
@@ -897,7 +751,7 @@ class Agent
             $result[$oidKey] = $this->parseSnmpValue($value);
         }
 
-        return $this->getCache()->save($oid, $result);
+        return $result;
     }
 
     /**
@@ -907,7 +761,8 @@ class Agent
      * @param string $type  The MIB defines the type of each object id
      * @param mixed  $value The new value
      *
-     * @return boolean
+     * @return bool
+     * @throws Exception
      */
     public function set($oid, $type, $value)
     {
@@ -930,7 +785,6 @@ class Agent
         if ($this->_lastResult === false) {
             throw new Exception('Could not add variable ' . $value . ' for OID ' . $oid);
         }
-        $this->getCache()->clear($oid);
 
         return $this->_lastResult;
     }
