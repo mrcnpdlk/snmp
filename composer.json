@@ -30,7 +30,8 @@
     "phpstan/phpstan": "^0",
     "phpstan/phpstan-phpunit": "^0",
     "jangregor/phpstan-prophecy": "^0",
-    "monolog/monolog": "^1"
+    "monolog/monolog": "^1",
+    "timeweb/phpstan-enum": "^2.1.0"
   },
   "suggest": {
     "monolog/monolog": "^1.23",

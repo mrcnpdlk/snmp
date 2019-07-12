@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "91d73e0fc3edf5cf7e539d416e5c032f",
+    "content-hash": "ab3b242816bd368070a9fa4b44fe2009",
     "packages": [
         {
             "name": "mrcnpdlk/lib-configuration",
@@ -3786,6 +3786,45 @@
             ],
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
             "time": "2019-06-13T22:48:21+00:00"
+        },
+        {
+            "name": "timeweb/phpstan-enum",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/timeweb/phpstan-enum.git",
+                "reference": "c43c9715c4cc67ea869d408be0fd1b4e1b4ccdf1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/timeweb/phpstan-enum/zipball/c43c9715c4cc67ea869d408be0fd1b4e1b4ccdf1",
+                "reference": "c43c9715c4cc67ea869d408be0fd1b4e1b4ccdf1",
+                "shasum": ""
+            },
+            "require": {
+                "myclabs/php-enum": "^1.2",
+                "php": "~7.1",
+                "phpstan/phpstan": "^0.10|^0.11"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Timeweb\\PHPStan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Enum class reflection extension for PHPStan",
+            "keywords": [
+                "PHPStan",
+                "enum"
+            ],
+            "time": "2019-02-19T19:34:44+00:00"
         },
         {
             "name": "webmozart/assert",

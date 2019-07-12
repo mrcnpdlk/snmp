@@ -11,3 +11,4 @@ includes:
 	- vendor/phpstan/phpstan-phpunit/extension.neon
 	- vendor/phpstan/phpstan-phpunit/rules.neon
 	- vendor/jangregor/phpstan-prophecy/src/extension.neon
+	- vendor/timeweb/phpstan-enum/extension.neon
