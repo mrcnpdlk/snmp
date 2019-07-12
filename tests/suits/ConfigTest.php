@@ -7,8 +7,19 @@
 
 namespace Tests\Mrcnpdlk\Lib\Snmp;
 
+use Mrcnpdlk\Lib\Snmp\Config;
+use Mrcnpdlk\Lib\Snmp\Enum\Version;
 use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase
 {
+    public function testConfig()
+    {
+        new Config([
+            'host'      => '10.0.10.10',
+            'community' => 'some_community',
+            'version'   => Version::VER_1,
+        ]);
+        $this->assertTrue(true);
+    }
 }
