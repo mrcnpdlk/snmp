@@ -10,7 +10,7 @@ php:
   - '7.2'
   - '7.3'
 before_install:
-  - apt-get install php-snmp
+  - sudo apt-get install php-snmp
   - echo "extension = snmp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
