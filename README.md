@@ -13,16 +13,20 @@
  ## Basic usage
 
 ```php
-$oSnmp = new mrcnpdlk\Snmp\Agent(
-    __IP__,
-    __USER__,
-    \mrcnpdlk\Snmp\Agent::SNMP_VER_3,
-    \mrcnpdlk\Snmp\Agent::SEC_LEVEL_AUTH_NO_PRIV,
-    \mrcnpdlk\Snmp\Agent::SEC_LEVEL_MD5,
-    __PASS__);
+use Mrcnpdlk\Lib\Snmp\Agent;
+use Mrcnpdlk\Lib\Snmp\Config;
+use Mrcnpdlk\Lib\Snmp\Enum\Version;
 
-# If you need import external MIB file just do it
-$oSnmp->importMibFile(__DIR__.'/mibs/SNMPv2-MIB.mib');
+require __DIR__ . '/../vendor/autoload.php';
 
-$res = $oSnmp->get('SNMPv2-SMI::enterprises.2024.1.2.??????');
+$oConfig = new Config([
+    'host'      => '10.0.10.10',
+    'community' => 'some_community',
+    'version'   => Version::VER_1,
+    'mibFiles'  => [__DIR__ . '/some_mib_file.MIB'],
+]);
+
+$oSnmp = new Agent($oConfig);
+
+var_dump($oSnmp->get('masterVoltageL2.0'));
 ```

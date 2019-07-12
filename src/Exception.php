@@ -1,9 +1,7 @@
 <?php
 
-namespace mrcnpdlk\Snmp;
-
+namespace Mrcnpdlk\Lib\Snmp;
 
 class Exception extends \Exception
 {
-
 }
