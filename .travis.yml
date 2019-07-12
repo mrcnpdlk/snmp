@@ -15,7 +15,7 @@ before_install:
   - sudo apt-get install -y python-software-properties
   - LC_ALL=C.UTF-8 sudo add-apt-repository -y ppa:ondrej/php
   - sudo apt-get update
-  - sudo apt-get install -y apt-transport-https apt-utils curl php7.2-cli php7.2-mysql php7.2-curl php7.2-snmp
+  - sudo apt-get install -y apt-transport-https apt-utils curl php-snmp
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
