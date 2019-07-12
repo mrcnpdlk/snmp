@@ -6,16 +6,22 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 language: php
+sudo: required
 php:
   - '7.2'
   - '7.3'
 before_install:
-  - sudo apt-get install php7.2-snmp
-  - echo "extension = snmp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - sudo apt-get update
+  - sudo apt-get install -y python-software-properties
+  - LC_ALL=C.UTF-8 sudo add-apt-repository -y ppa:ondrej/php
+  - sudo apt-get update
+  - sudo apt-get install -y apt-transport-https apt-utils curl php7.2-cli php7.2-mysql php7.2-curl php7.2-snmp
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
+script:
+  - sudo php -m | grep snmp
 install:
   - composer install
 after_script:
