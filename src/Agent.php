@@ -45,6 +45,7 @@ class Agent
      */
     public function __construct(Config $oConfig)
     {
+        snmp_set_oid_output_format(SNMP_OID_OUTPUT_FULL);
         $this->oConfig = $oConfig;
     }
 
@@ -57,7 +58,7 @@ class Agent
      *
      * @return mixed The resultant value
      */
-    public function get($oid)
+    public function get(string $oid)
     {
         switch ($this->oConfig->getVersion()->getValue()) {
             case Version::VER_1:
@@ -120,7 +121,7 @@ class Agent
      *
      * @return mixed The parsed value
      */
-    public function parseSnmpValue($v)
+    public function parseSnmpValue(string $v)
     {
         // first, rule out an empty string
         if ('""' === $v || '' === $v) {
@@ -146,22 +147,16 @@ class Agent
                     $rtn = (int)$value;
                 }
                 break;
-            case 'Counter32':
-                $rtn = (int)$value;
-                break;
             case 'Counter64':
-                $rtn = (int)$value;
-                break;
             case 'Gauge32':
+            case 'Counter32':
                 $rtn = (int)$value;
                 break;
             case 'Hex-STRING':
                 $rtn = (string)implode('', explode(' ', preg_replace('/[^A-Fa-f0-9]/', '', $value)));
                 break;
-            case 'IpAddress':
-                $rtn = (string)$value;
-                break;
             case 'OID':
+            case 'IpAddress':
                 $rtn = (string)$value;
                 break;
             case 'Timeticks':
@@ -181,9 +176,9 @@ class Agent
      *
      * @throws \Mrcnpdlk\Lib\Snmp\Exception
      *
-     * @return array|false The results of the walk
+     * @return array<mixed>|false The results of the walk
      */
-    public function realWalk($oid)
+    public function realWalk(string $oid)
     {
         switch ($this->oConfig->getVersion()->getValue()) {
             case Version::VER_1:
@@ -194,7 +189,6 @@ class Agent
                     $this->oConfig->getTimeout(),
                     $this->oConfig->getRetry()
                 );
-                break;
             case Version::VER_2C:
                 return $this->_lastResult = @snmp2_real_walk(
                     $this->oConfig->getHost(),
@@ -203,7 +197,6 @@ class Agent
                     $this->oConfig->getTimeout(),
                     $this->oConfig->getRetry()
                 );
-                break;
             case Version::VER_3:
                 return $this->_lastResult = @snmp3_real_walk(
                     $this->oConfig->getHost(),
@@ -217,7 +210,6 @@ class Agent
                     $this->oConfig->getTimeout(),
                     $this->oConfig->getRetry()
                 );
-                break;
             default:
                 throw new Exception('Invalid SNMP version: ' . $this->oConfig->getVersion());
         }
@@ -234,7 +226,7 @@ class Agent
      *
      * @return mixed
      */
-    public function set($oid, $type, $value)
+    public function set(string $oid, string $type, $value)
     {
         switch ($this->oConfig->getVersion()->getValue()) {
             case Version::VER_1:
@@ -314,7 +306,6 @@ class Agent
      *        [58.182.16] => Hex-STRING: 00 00 75 33 4E 93
      *        [22.55.8]   => Hex-STRING: 00 00 75 33 4E 94
      *
-     *
      * @param string $oid      The OID to walk
      * @param int    $position The position of the OID to use as the key
      * @param int    $elements Number of additional elements to include in the returned array keys after $position.
@@ -324,9 +315,9 @@ class Agent
      *
      * @throws \Mrcnpdlk\Lib\Snmp\Exception
      *
-     * @return array On *any* SNMP error, warnings are supressed and a generic exception is thrown
+     * @return array<mixed> On *any* SNMP error, warnings are supressed and a generic exception is thrown
      */
-    public function subOidWalk($oid, $position, $elements = 1): array
+    public function subOidWalk(string $oid, int $position, int $elements = 1): array
     {
         $this->_lastResult = $this->realWalk($oid);
         if (false === $this->_lastResult) {
@@ -348,16 +339,15 @@ class Agent
     /**
      * Get indexed SNMP values where the array key is spread over a number of OID positions
      *
-     *
      * @param string $oid       The OID to walk
      * @param int    $positionS The start position of the OID to use as the key
      * @param int    $positionE The end position of the OID to use as the key
      *
      * @throws \Mrcnpdlk\Lib\Snmp\Exception
      *
-     * @return array On *any* SNMP error, warnings are supressed and a generic exception is thrown
+     * @return array<mixed> On *any* SNMP error, warnings are supressed and a generic exception is thrown
      */
-    public function subOidWalkLong($oid, $positionS, $positionE): array
+    public function subOidWalkLong(string $oid, int $positionS, int $positionE): array
     {
         $this->_lastResult = $this->realWalk($oid);
         if (false === $this->_lastResult) {
@@ -402,9 +392,9 @@ class Agent
      *
      * @throws \Mrcnpdlk\Lib\Snmp\Exception
      *
-     * @return array The resultant values
+     * @return array<mixed> The resultant values
      */
-    public function walk1d($oid): array
+    public function walk1d(string $oid): array
     {
         $this->_lastResult = $this->realWalk($oid);
         if (false === $this->_lastResult) {
@@ -440,14 +430,13 @@ class Agent
      *      [10.20.30.4] => "192.168.10.10"
      *      ....
      *
-     *
      * @param string $oid The OID to walk
      *
      * @throws \Mrcnpdlk\Lib\Snmp\Exception
      *
-     * @return array On *any* SNMP error, warnings are supressed and a generic exception is thrown
+     * @return array<mixed> On *any* SNMP error, warnings are supressed and a generic exception is thrown
      */
-    public function walkIPv4($oid): array
+    public function walkIPv4(string $oid): array
     {
         $this->_lastResult = $this->realWalk($oid);
         if (false === $this->_lastResult) {

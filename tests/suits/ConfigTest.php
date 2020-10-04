@@ -13,7 +13,10 @@ use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase
 {
-    public function testConfig()
+    /**
+     * @throws \Mrcnpdlk\Lib\ConfigurationException
+     */
+    public function testConfig(): void
     {
         new Config([
             'host'      => '10.0.10.10',
