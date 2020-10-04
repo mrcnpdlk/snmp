@@ -224,7 +224,7 @@ class Config extends ConfigurationOptionsAbstract
         } elseif (is_string($authProtocol)) {
             $this->authProtocol = new AuthProtocol($authProtocol);
         } else {
-            throw new ConfigurationException('%s has bad type', '$authProtocol');
+            throw new ConfigurationException(sprintf('%s has bad type', '$authProtocol'));
         }
 
         return $this;
@@ -294,7 +294,7 @@ class Config extends ConfigurationOptionsAbstract
         } elseif (is_string($oidOutputFormat)) {
             $this->oidOutputFormat = new OidOutputFormat($oidOutputFormat);
         } else {
-            throw new ConfigurationException('%s has bad type', '$oidOutputFormat');
+            throw new ConfigurationException(sprintf('%s has bad type', '$oidOutputFormat'));
         }
 
         snmp_set_oid_output_format($this->oidOutputFormat->getValue());
@@ -329,7 +329,7 @@ class Config extends ConfigurationOptionsAbstract
         } elseif (is_string($privProtocol)) {
             $this->privProtocol = new PrivProtocol($privProtocol);
         } else {
-            throw new ConfigurationException('%s has bad type', '$privProtocol');
+            throw new ConfigurationException(sprintf('%s has bad type', '$privProtocol'));
         }
 
         return $this;
@@ -361,7 +361,7 @@ class Config extends ConfigurationOptionsAbstract
         } elseif (is_string($secLevel)) {
             $this->secLevel = new SecLevel($secLevel);
         } else {
-            throw new ConfigurationException('%s has bad type', '$secLevel');
+            throw new ConfigurationException(sprintf('%s has bad type', '$secLevel'));
         }
 
         return $this;
@@ -405,7 +405,7 @@ class Config extends ConfigurationOptionsAbstract
         } elseif (is_string($version)) {
             $this->version = new Version($version);
         } else {
-            throw new ConfigurationException('%s has bad type', '$version');
+            throw new ConfigurationException(sprintf('%s has bad type', '$version'));
         }
 
         return $this;

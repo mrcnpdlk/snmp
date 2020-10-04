@@ -1,14 +1,14 @@
 parameters:
-	level: 4
+	level: 6
 	paths:
 		- src
 		- tests
 	fileExtensions:
 		- php
-
+	checkGenericClassInNonGenericObjectType: false
 
 includes:
 	- vendor/phpstan/phpstan-phpunit/extension.neon
 	- vendor/phpstan/phpstan-phpunit/rules.neon
-	- vendor/jangregor/phpstan-prophecy/src/extension.neon
+	- vendor/jangregor/phpstan-prophecy/extension.neon
 	- vendor/timeweb/phpstan-enum/extension.neon
