@@ -232,7 +232,7 @@ class Agent
             case Version::VER_1:
                 $this->_lastResult = @snmpset(
                     $this->oConfig->getHost(),
-                    $this->oConfig->getCommunity(),
+                    $this->oConfig->getCommunitySet(),
                     $oid,
                     $type,
                     $value,
@@ -243,7 +243,7 @@ class Agent
             case Version::VER_2C:
                 $this->_lastResult = @snmp2_set(
                     $this->oConfig->getHost(),
-                    $this->oConfig->getCommunity(),
+                    $this->oConfig->getCommunitySet(),
                     $oid,
                     $type,
                     $value,

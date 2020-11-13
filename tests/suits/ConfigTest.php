@@ -18,11 +18,14 @@ class ConfigTest extends TestCase
      */
     public function testConfig(): void
     {
-        new Config([
+        $oConfig = new Config([
             'host'      => '10.0.10.10',
             'community' => 'some_community',
             'version'   => Version::VER_1,
         ]);
-        $this->assertTrue(true);
+        self::assertTrue(true);
+        self::assertSame('private', $oConfig->getCommunitySet());
+        self::assertSame('some_community', $oConfig->getCommunity());
+        self::assertSame('10.0.10.10', $oConfig->getHost());
     }
 }
