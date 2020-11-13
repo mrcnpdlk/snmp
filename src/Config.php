@@ -22,7 +22,13 @@ class Config extends ConfigurationOptionsAbstract
      *
      * @var string The SNMP community to use when polling SNMP services. Defaults to 'public' by the constructor.
      */
-    protected $community;
+    protected $community = 'public';
+    /**
+     * The SNMP community to use when polling SNMP services. Defaults to 'private' by the constructor.
+     *
+     * @var string The SNMP community to use when polling SNMP services. Defaults to 'private' by the constructor.
+     */
+    protected $communitySet = 'private';
     /**
      * The SNMP host to query. Defaults to '127.0.0.1'
      *
@@ -122,6 +128,14 @@ class Config extends ConfigurationOptionsAbstract
     public function getCommunity(): string
     {
         return $this->community;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommunitySet(): string
+    {
+        return $this->communitySet;
     }
 
     /**
@@ -250,6 +264,18 @@ class Config extends ConfigurationOptionsAbstract
     public function setHost(string $host): Config
     {
         $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * @param string $communitySet
+     *
+     * @return Config
+     */
+    public function setCommunitySet(string $communitySet): Config
+    {
+        $this->communitySet = $communitySet;
 
         return $this;
     }
