@@ -69,7 +69,7 @@ class Agent
                     $this->oConfig->getTimeout(),
                     $this->oConfig->getRetry());
                 break;
-            case  Version::VER_2C:
+            case Version::VER_2C:
                 $this->_lastResult = @snmp2_get(
                     $this->oConfig->getHost(),
                     $this->oConfig->getCommunity(),
@@ -77,7 +77,7 @@ class Agent
                     $this->oConfig->getTimeout(),
                     $this->oConfig->getRetry());
                 break;
-            case  Version::VER_3:
+            case Version::VER_3:
                 $this->_lastResult = @snmp3_get(
                     $this->oConfig->getHost(),
                     $this->oConfig->getSecName(),
